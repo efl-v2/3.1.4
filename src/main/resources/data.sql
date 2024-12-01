@@ -16,13 +16,12 @@ create table if not exists roles
     role_name varchar(50) not null
 );
 
-create table if not exists user_roles
-(
+create table user_roles (
     user_id bigint,
-    foreign key (user_id) references user_312 (id),
     role_id bigint,
-    foreign key (user_id) references user_312 (id),
-    primary key (user_id, role_id)
+    primary key (user_id, role_id),
+    foreign key (user_id) references user_312(id),
+    foreign key (role_id) references roles(id)
 );
 
 insert into user_312 (first_name, last_name, age, email, password)

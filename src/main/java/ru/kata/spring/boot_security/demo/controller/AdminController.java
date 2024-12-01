@@ -23,9 +23,10 @@ import ru.kata.spring.boot_security.demo.service.UserServiceImpl;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Set;
-import jakarta.validation.Valid;
+
 
 @Controller
 @RequestMapping("/admin")
@@ -65,14 +66,12 @@ public class AdminController {
         model.addAttribute("editUser", userService.findUserById(id));
         model.addAttribute("users", userService.getAllUsers());
         model.addAttribute("roles", roleService.getRoles());
-        if (bindingResult.hasErrors()) {
-            return "redirect:/admin/"; // Предположительно, должно быть имя представления
-        } else {
-            user.setRoles(roles); // Используем полученные роли напрямую
+        if (!bindingResult.hasErrors()) {
+            user.setRoles(roles);
             user.setId(id);
             userService.editUser(user);
-            return "redirect:/admin/";
         }
+        return "redirect:/admin/";
     }
 
     @PostMapping("/delete_user/{id}")
@@ -93,13 +92,11 @@ public class AdminController {
     @PostMapping("/add_user")
     public String addUser(@ModelAttribute("addUser") @Valid User user, BindingResult bindingResult, Model model,
                           @RequestParam("roles") Set<Role> roles) {
-        if (bindingResult.hasErrors()) {
-            return "redirect:/admin/"; // Предположительно, должно быть имя представления
-        } else {
-            user.setRoles(roles); // Используем полученные роли напрямую
+        if (!bindingResult.hasErrors()) {
+            user.setRoles(roles);
             userService.saveUser(user);
             model.addAttribute("addUser", user);
-            return "redirect:/admin/";
         }
+        return "redirect:/admin/";
     }
 }

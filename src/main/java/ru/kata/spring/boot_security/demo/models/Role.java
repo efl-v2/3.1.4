@@ -7,8 +7,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotEmpty;
 
-import jakarta.validation.constraints.NotEmpty;
+
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.HashSet;
@@ -26,7 +27,7 @@ public class Role implements GrantedAuthority {
 
     @Column(name = "role_name", unique = true)
     @NotEmpty
-    private String name;
+    private String nameRole;
 
     @ManyToMany(mappedBy = "roles")
     private Set<User> users = new HashSet<>();
@@ -36,11 +37,11 @@ public class Role implements GrantedAuthority {
 
     @Override
     public String getAuthority() {
-        return getName();
+        return getNameRole();
     }
 
     public Role(String name) {
-        this.name = name;
+        this.nameRole = name;
     }
 
     public Integer getId() {
@@ -51,12 +52,12 @@ public class Role implements GrantedAuthority {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getNameRole() {
+        return nameRole;
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.nameRole = name;
     }
 
     public Set<User> getUsers() {
@@ -68,12 +69,12 @@ public class Role implements GrantedAuthority {
     }
     @Override
     public int hashCode() {
-        return Objects.hash(id, name);
+        return Objects.hash(id, nameRole);
     }
 
     @Override
     public String toString() {
-        return name;
+        return nameRole;
     }
 
 }
