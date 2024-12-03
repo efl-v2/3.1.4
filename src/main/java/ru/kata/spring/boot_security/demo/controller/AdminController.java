@@ -28,11 +28,11 @@ import java.security.Principal;
 import java.util.Set;
 
 
+
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
 
-    private final String redirect = "redirect:/admin";
     private final UserService userService;
     private final RoleService roleService;
 
@@ -50,19 +50,21 @@ public class AdminController {
 
         return "redirect:/login";
     }
+
     @GetMapping("")
     public String adminPage(Model model, Principal principal) {
-        User user = userService.findUserByEmail(principal.getName());
+        //System.out.println(principal.getName());
+        User user = userService.findUserByName(principal.getName());
         model.addAttribute("user", user);
         model.addAttribute("users", userService.getAllUsers());
         model.addAttribute("roles", roleService.getRoles());
-        return "/admin";
+        return "admin";
     }
 
     @PostMapping("/edit_user/{id}")
     public String showFormForEditUser(@Valid @ModelAttribute("editUser") User user, BindingResult bindingResult,
                                       @RequestParam("roles") Set<Role> roles,
-                                      @PathVariable("id") Long id, Model model) {
+                                      @PathVariable("id") long id, Model model) {
         model.addAttribute("editUser", userService.findUserById(id));
         model.addAttribute("users", userService.getAllUsers());
         model.addAttribute("roles", roleService.getRoles());
@@ -84,8 +86,9 @@ public class AdminController {
     }
 
     @GetMapping("/add_user")
-    public String showFormForAddUser(@ModelAttribute("addUser") User User, Model model) {
-        model.addAttribute("addUser", new User());
+    public String showFormForAddUser(Model model) {
+        model.addAttribute("user", new User());
+        model.addAttribute("allRoles", roleService.getRoles());
         return "/admin";
     }
 
@@ -99,4 +102,5 @@ public class AdminController {
         }
         return "redirect:/admin/";
     }
+
 }

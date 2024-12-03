@@ -19,7 +19,7 @@
             <a class="navbar-brand" th:if="${user != null}" th:object="${user}" th:text="${user.getRoles()}"></a>
         </div>
 
-        <form class="d-flex" th:action="@{/user/logout}" method="post">
+        <form class="d-flex" th:action="@{/logout}" method="post">
             <button type="submit" class="btn btn-outline-light">Logout</button>
         </form>
 

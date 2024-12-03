@@ -24,7 +24,7 @@
             <a class="navbar-brand" th:if="${user != null}" th:object="${user}" th:text="${user.getRoles()}"></a>
         </div>
 
-        <form class="d-flex" th:action="@{/admin/logout}" method="post">
+        <form class="d-flex" th:action="@{/logout}" method="post">
             <button type="submit" class="btn btn-outline-light">Logout</button>
         </form>
 
@@ -192,13 +192,13 @@
                                         <div class="card-header"></div>
                                         <div class="card-body">
                                             <div class="form-check">
-                                                <label class="form-check-label d-block my-2" th:each="role : ${roles}">
+                                                <label class="form-check-label d-block my-2" th:each="role : ${allRoles}">
                                                     <input class="form-check-input"
-                                                           th:field="*{roles}"
-                                                           th:value="${role.getId()}"
+                                                           th:field="*{user.roles}"
+                                                           th:value="${role.id}"
                                                            type="checkbox"
                                                            name="roles">
-                                                    <span th:text="${role.getNameRole()}"></span>
+                                                    <span th:text="${role.nameRole}"></span>
                                                 </label>
                                             </div>
                                         </div>

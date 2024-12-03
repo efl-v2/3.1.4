@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import org.springframework.web.bind.annotation.RequestMapping;
 import ru.kata.spring.boot_security.demo.models.User;
 import ru.kata.spring.boot_security.demo.service.UserService;
 
@@ -27,7 +28,7 @@ public class UserController {
 
     @GetMapping("/user")
     public String showUser(Model model, Principal principal) {
-        User user = userService.findUserByEmail(principal.getName());
+        User user = userService.findUserByName(principal.getName());
         model.addAttribute("user", user);
         return "/index";
     }

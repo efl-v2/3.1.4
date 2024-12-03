@@ -15,5 +15,5 @@ public interface UserService {
 
     void editUser(User user);
 
-    User findUserByEmail(String email);
+    User findUserByName(String login);
 }
