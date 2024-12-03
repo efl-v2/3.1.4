@@ -21,7 +21,11 @@
             <a class="navbar-brand text-strong" th:if="${user != null}" th:object="${user}"
                th:text="${user.getEmail()}"></a>
             <a class="navbar-brand">with roles:</a>
-            <a class="navbar-brand" th:if="${user != null}" th:object="${user}" th:text="${user.getRoles()}"></a>
+            <a class="navbar-brand" th:if="${user != null}" th:object="${user}">
+                <span th:each="role : ${#strings.arrayJoin(user.getRoles(), ', ')}">
+                    [[${#strings.replace(role, 'ROLE_', '')}]]
+                </span>
+            </a>
         </div>
 
         <form class="d-flex" th:action="@{/logout}" method="post">
@@ -96,7 +100,11 @@
                                         <td th:text="${user.lastName}"></td>
                                         <td th:text="${user.age}"></td>
                                         <td th:text="${user.getEmail()}"></td>
-                                        <td th:text="${user.getRoles()}"></td>
+                                        <td>
+                                            <span th:each="role : ${#strings.arrayJoin(user.getRoles(), ', ')}">
+                                                [[${#strings.replace(role, 'ROLE_', '')}]]
+                                            </span>
+                                        </td>
 
                                         <td>
                                             <button type="button" class="btn-edit btn btn-info text-white"
@@ -194,13 +202,14 @@
                                             <div class="form-check">
                                                 <label class="form-check-label d-block my-2" th:each="role : ${allRoles}">
                                                     <input class="form-check-input"
-                                                           th:field="*{user.roles}"
+                                                           th:field="*{roles}"
                                                            th:value="${role.id}"
                                                            type="checkbox"
                                                            name="roles">
-                                                    <span th:text="${role.nameRole}"></span>
+                                                    <span th:text="${role.getNameRole()}"></span>
                                                 </label>
                                             </div>
+                                            <!-- Выбор ролей -->
                                         </div>
                                     </div>
 
