@@ -89,7 +89,7 @@ public class AdminController {
     @GetMapping("/add_user")
     public String showFormForAddUser(Model model) {
         model.addAttribute("user", new User());
-        model.addAttribute("allRoles", roleService.getRoles());
+        model.addAttribute("roles", roleService.getRoles());
         return "/admin";
     }
 
