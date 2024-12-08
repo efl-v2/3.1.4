@@ -1,19 +1,22 @@
 package ru.kata.spring.boot_security.demo.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import org.springframework.web.bind.annotation.RestController;
 import ru.kata.spring.boot_security.demo.models.Role;
 import ru.kata.spring.boot_security.demo.models.User;
 import ru.kata.spring.boot_security.demo.service.RoleService;
@@ -25,12 +28,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 
-@Controller
+
+@RestController
 @RequestMapping("/admin")
 public class AdminController {
 
@@ -52,56 +57,63 @@ public class AdminController {
         return "redirect:/login";
     }
 
-    @GetMapping("")
-    public String adminPage(Model model, Principal principal) {
-        //System.out.println(principal.getName());
-        User user = userService.findUserByName(principal.getName());
-        model.addAttribute("user", user);
-        model.addAttribute("users", userService.getAllUsers());
-        model.addAttribute("roles", roleService.getRoles());
-        return "admin";
-    }
+    @GetMapping("/users")
+    public ResponseEntity<Map<String, Object>> showAllUsers(Principal principal) {
 
-    @PostMapping("/edit_user/{id}")
-    public String showFormForEditUser(@Valid @ModelAttribute("editUser") User user, BindingResult bindingResult,
-                                      @RequestParam("roles") Set<Role> roles,
-                                      @PathVariable("id") long id, Model model) {
-        model.addAttribute("editUser", userService.findUserById(id));
-        model.addAttribute("users", userService.getAllUsers());
-        model.addAttribute("roles", roleService.getRoles());
-        if (!bindingResult.hasErrors()) {
-            user.setRoles(roles);
-            user.setId(id);
-            userService.editUser(user);
+        Map<String, Object> responseMap = new HashMap<>();
+        if (principal != null) {
+            // Получение текущего пользователя
+            User currentUser = userService.findUserByName(principal.getName());
+            responseMap.put("currentUser", currentUser);
         }
-        return "redirect:/admin/";
+
+        // Список всех пользователей
+        List<User> users = userService.getAllUsers();
+        responseMap.put("users", users);
+
+        // Роли
+        List<Role> roles = roleService.getRoles();
+        responseMap.put("roles", roles);
+
+        return new ResponseEntity<>(responseMap, HttpStatus.OK);
     }
 
-    @PostMapping("/delete_user/{id}")
-    public String deleteUser(@PathVariable("id") long id,
-                             @ModelAttribute("deleteUser") User deleteUser, Model model) {
-        model.addAttribute("users", userService.getAllUsers());
-        model.addAttribute("user", userService.findUserById(id));
+    @PutMapping("/users/{id}")
+    public ResponseEntity<User> editUser(@PathVariable("id") long id, @RequestBody @Valid User user,
+                                         @RequestParam("roles") Set<Role> roles, BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new ResponseEntity<>(user, HttpStatus.BAD_REQUEST);
+        }
+
+        user.setId(id);
+        user.setRoles(roles);
+        userService.editUser(user);
+
+        return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/users/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable("id") long id) {
+
         userService.deleteUser(id);
-        return "redirect:/admin/";
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @GetMapping("/add_user")
-    public String showFormForAddUser(Model model) {
-        model.addAttribute("user", new User());
-        model.addAttribute("roles", roleService.getRoles());
-        return "/admin";
-    }
+    @PostMapping("/users")
+    public ResponseEntity<User> createUser(@RequestBody @Valid User user,
+                                           @RequestParam("roles") Set<Role> roles,
+                                           BindingResult bindingResult) {
 
-    @PostMapping("/add_user")
-    public String addUser(@ModelAttribute("addUser") @Valid User user, BindingResult bindingResult, Model model,
-                          @RequestParam("roles") Set<Role> roles) {
-        if (!bindingResult.hasErrors()) {
-            user.setRoles(roles);
-            userService.saveUser(user);
-            model.addAttribute("addUser", user);
+        if (bindingResult.hasErrors()) {
+            return new ResponseEntity<>(user, HttpStatus.BAD_REQUEST);
         }
-        return "redirect:/admin/";
+
+        user.setRoles(roles);
+        userService.saveUser(user);
+
+        return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 
 }

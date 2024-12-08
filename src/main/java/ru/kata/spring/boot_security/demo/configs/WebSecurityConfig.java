@@ -31,26 +31,35 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         this.userServiceImpl = userServiceImpl;
     }
 
+//    @Override
+//    protected void configure(HttpSecurity http) throws Exception {
+//        http
+//                .cors()
+//                .and()
+//                .authorizeRequests()
+//                .antMatchers("/", "/index", "/login")
+//                .permitAll()
+//                .antMatchers("/admin/**").hasRole("ADMIN")
+//                .antMatchers("/user/**").hasAnyRole("USER", "ADMIN")
+//                .anyRequest().authenticated()
+//                .and()
+//                .formLogin().successHandler(successUserHandler)
+//                .permitAll()
+//                .and()
+//                .logout()
+//                .logoutUrl("/logout")
+//                .logoutSuccessUrl("/")
+//                .permitAll();
+//
+//    }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http
-                .cors()
-                .and()
-                .authorizeRequests()
-                .antMatchers("/", "/index", "/login")
-                .permitAll()
-                .antMatchers("/admin/**").hasRole("ADMIN")
-                .antMatchers("/user/**").hasAnyRole("USER", "ADMIN")
-                .anyRequest().authenticated()
-                .and()
-                .formLogin().successHandler(successUserHandler)
-                .permitAll()
-                .and()
-                .logout()
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/")
-                .permitAll();
+        // Отключаем все проверки безопасности
+        http.authorizeRequests().anyRequest().permitAll();
 
+        // Дополнительно отключаем CSRF-защиту
+        http.csrf().disable();
     }
 
     @Bean

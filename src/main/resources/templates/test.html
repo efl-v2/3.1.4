@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>тест7</title>
+</head>
+<body>
+
+<h1>Управление пользователями</h1>
+
+<!-- Таблица для отображения пользователей -->
+<table id="usersTable">
+    <thead>
+    <tr>
+        <th>Имя</th>
+        <th>Фамилия</th>
+        <th>Возраст</th>
+        <th>Email</th>
+        <th>Роль</th>
+        <th>Действия</th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<!--&lt;!&ndash; Модальное окно для редактирования пользователя &ndash;&gt;-->
+<!--<div id="editModal" class="modal">-->
+<!--    <div class="modal-content">-->
+<!--        <span class="close" onclick="closeModal()">×</span>-->
+<!--        <form>-->
+<!--            <input type="hidden" id="userId" />-->
+<!--            <label for="firstNameInput">Имя:</label><br>-->
+<!--            <input type="text" id="firstNameInput" required><br><br>-->
+<!--            <label for="lastNameInput">Фамилия:</label><br>-->
+<!--            <input type="text" id="lastNameInput" required><br><br>-->
+<!--            <label for="ageInput">Возраст:</label><br>-->
+<!--            <input type="number" id="ageInput" min="18" max="120" required><br><br>-->
+<!--            <label for="emailInput">Email:</label><br>-->
+<!--            <input type="email" id="emailInput" required><br><br>-->
+<!--            <label for="roleSelect">Роль:</label><br>-->
+<!--            <select id="roleSelect" required>-->
+<!--            </select><br><br>-->
+<!--            <button type="button" onclick="saveEditedUser()">Сохранить</button>-->
+<!--        </form>-->
+<!--    </div>-->
+<!--</div>-->
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        fetch('/admin/users') // URL
+            .then(response => response.json())
+            .then(data => {
+                const users = data.users; // Доступ к списку пользователей
+                const roles = data.roles; // Доступ к ролям
+                renderUsersTable(users, roles); // отображение таблицы
+            })
+            .catch(error => console.error('Error:', error));
+    });
+
+    function renderUsersTable(users, roles) {
+        const tableBody = document.querySelector('#usersTable tbody'); // Находим таблицу
+        tableBody.innerHTML = ''; // Очищаем содержимое таблицы
+
+        users.forEach(user => {
+            const row = tableBody.insertRow(); // Добавляем строку
+            const cellFirstName = row.insertCell(0); // Ячейка имени
+            const cellLastName = row.insertCell(1); // Ячейка фамилии
+            const cellAge = row.insertCell(2); // Ячейка возраста
+            const cellEmail = row.insertCell(3); // Ячейка email
+            const cellRole = row.insertCell(4); // Ячейка роли
+            const cellActions = row.insertCell(5); // Ячейка действий
+
+            cellFirstName.textContent = user.firstName; // Заполняем имя
+            cellLastName.textContent = user.lastName; // Заполняем фамилию
+            cellAge.textContent = user.age; // Заполняем возраст
+            cellEmail.textContent = user.email; // Заполняем email
+            cellRole.textContent = user.roles.map(role => role.nameRole).join(', '); // Заполняем роли
+            cellActions.innerHTML = `
+            <button onclick="editUser(${user.id})">Редактировать</button>
+            <button onclick="deleteUser(${user.id})">Удалить</button>
+        `; // Кнопки действий
+        });
+    }
+    //
+    // function editUser(userId) {
+    //     fetch(`/users/${userId}`)
+    //         .then(response => response.json())
+    //         .then(user => {
+    //             const modal = document.getElementById('editModal'); // Находим модальное окно
+    //             modal.style.display = 'block'; // Показываем модальное окно
+    //
+    //             const firstNameInput = document.getElementById('firstNameInput');
+    //             const lastNameInput = document.getElementById('lastNameInput');
+    //             const ageInput = document.getElementById('ageInput');
+    //             const emailInput = document.getElementById('emailInput');
+    //             const roleSelect = document.getElementById('roleSelect');
+    //
+    //             firstNameInput.value = user.firstName; // Заполняем поля формы
+    //             lastNameInput.value = user.lastName;
+    //             ageInput.value = user.age;
+    //             emailInput.value = user.email;
+    //
+    //             // Заполняем выпадающий список ролей
+    //             const roles = document.querySelectorAll('#roleSelect option');
+    //             roles.forEach(option => {
+    //                 if (option.value === user.roles[0].id.toString()) {
+    //                     option.selected = true;
+    //                 }
+    //             });
+    //
+    //             // Сохраняем ID пользователя для последующего обновления
+    //             document.getElementById('userId').value = user.id;
+    //         })
+    //         .catch(error => console.error('Error:', error));
+    // }
+    //
+    // function closeModal() {
+    //     const modal = document.getElementById('editModal');
+    //     modal.style.display = 'none'; // Скрываем модальное окно
+    // }
+    //
+    // function saveEditedUser() {
+    //     const userId = document.getElementById('userId').value;
+    //     const firstName = document.getElementById('firstNameInput').value;
+    //     const lastName = document.getElementById('lastNameInput').value;
+    //     const age = document.getElementById('ageInput').value;
+    //     const email = document.getElementById('emailInput').value;
+    //     const roleId = document.getElementById('roleSelect').value;
+    //
+    //     const userData = {
+    //         firstName: firstName,
+    //         lastName: lastName,
+    //         age: parseInt(age),
+    //         email: email,
+    //         roles: [{ id: parseInt(roleId) }]
+    //     };
+    //
+    //     fetch(`/users/${userId}`, {
+    //         method: 'PUT',
+    //         headers: {
+    //             'Content-Type': 'application/json'
+    //         },
+    //         body: JSON.stringify(userData)
+    //     })
+    //         .then(response => response.json())
+    //         .then(data => {
+    //             alert('Пользователь успешно обновлен!');
+    //             closeModal(); // Скрываем модальное окно
+    //             window.location.reload(); // Перезагрузка страницы для обновления данных
+    //         })
+    //         .catch(error => console.error('Error:', error));
+    // }
+</script>
+
+</body>
+</html>
