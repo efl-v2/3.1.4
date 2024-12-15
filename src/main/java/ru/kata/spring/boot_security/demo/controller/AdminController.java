@@ -31,6 +31,7 @@ import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 
@@ -57,6 +58,7 @@ public class AdminController {
         return "redirect:/login";
     }
 
+
     @GetMapping("/users")
     public ResponseEntity<Map<String, Object>> showAllUsers(Principal principal) {
 
@@ -78,18 +80,26 @@ public class AdminController {
         return new ResponseEntity<>(responseMap, HttpStatus.OK);
     }
 
-    @PutMapping("/users/{id}")
-    public ResponseEntity<User> editUser(@PathVariable("id") long id, @RequestBody @Valid User user,
-                                         @RequestParam("roles") Set<Role> roles, BindingResult bindingResult) {
+    @GetMapping("/users/{userId}")
+    public ResponseEntity<User> getUserById(@PathVariable Long userId) {
+        return new ResponseEntity<>(userService.findUserById(userId), HttpStatus.OK);
+    }
 
+    @PutMapping("/users/{id}")
+    public ResponseEntity<User> editUser(@PathVariable("id") long id, @RequestBody @Valid User user, BindingResult bindingResult) {
+
+        System.out.println("editUser");
         if (bindingResult.hasErrors()) {
-            return new ResponseEntity<>(user, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        Optional<User> existingUser = Optional.ofNullable(userService.findUserById(id));
+        if (existingUser.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         user.setId(id);
-        user.setRoles(roles);
         userService.editUser(user);
-
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 

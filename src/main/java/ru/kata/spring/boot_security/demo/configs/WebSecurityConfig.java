@@ -31,47 +31,36 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         this.userServiceImpl = userServiceImpl;
     }
 
-//    @Override
-//    protected void configure(HttpSecurity http) throws Exception {
-//        http
-//                .cors()
-//                .and()
-//                .authorizeRequests()
-//                .antMatchers("/", "/index", "/login")
-//                .permitAll()
-//                .antMatchers("/admin/**").hasRole("ADMIN")
-//                .antMatchers("/user/**").hasAnyRole("USER", "ADMIN")
-//                .anyRequest().authenticated()
-//                .and()
-//                .formLogin().successHandler(successUserHandler)
-//                .permitAll()
-//                .and()
-//                .logout()
-//                .logoutUrl("/logout")
-//                .logoutSuccessUrl("/")
-//                .permitAll();
-//
-//    }
-
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        // Отключаем все проверки безопасности
-        http.authorizeRequests().anyRequest().permitAll();
+        http
+                .cors()
+                .and()
+                .authorizeRequests()
+                .antMatchers("/", "/index", "/login")
+                .permitAll()
+                .antMatchers("/admin/**").hasRole("ADMIN")
+                .antMatchers("/user/**").hasAnyRole("USER", "ADMIN")
+                .anyRequest().authenticated()
+                .and()
+                .formLogin().successHandler(successUserHandler)
+                .permitAll()
+                .and()
+                .logout()
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/")
+                .permitAll();
 
-        // Дополнительно отключаем CSRF-защиту
-        http.csrf().disable();
     }
 
-    @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:8080"));
-        configuration.setAllowedMethods(Arrays.asList("GET","POST"));
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
+//    @Override
+//    protected void configure(HttpSecurity http) throws Exception {
+//        // Отключаем все проверки безопасности
+//        http.authorizeRequests().anyRequest().permitAll();
+//
+//        // Дополнительно отключаем CSRF-защиту
+//        http.csrf().disable();
+//    }
 
     @Bean
     public PasswordEncoder getPasswordEncoder() {
