@@ -133,10 +133,10 @@ function showEditModal(userId, roles) {
                 option.textContent = role.authority.replace('ROLE_', '')
                 option.value = role.id;
 
-                // Если роль совпадает с текущей ролью пользователя, устанавливаем её как выбранную
-                if (role.id === user.roles[0].id) {
-                    option.selected = true;
-                }
+                // // Если роль совпадает с текущей ролью пользователя, устанавливаем её как выбранную
+                // if (role.id === user.roles[0].id) {
+                //     option.selected = true;
+                // }
 
                 roleSelect.appendChild(option);
             });
@@ -162,7 +162,7 @@ function editUser(userId) {
         lastName: lastName,
         age: parseInt(age),
         email: email,
-        roles: [{ id: parseInt(roleId) }],
+        roles: [parseInt(roleId)],
         password: password
     };
 

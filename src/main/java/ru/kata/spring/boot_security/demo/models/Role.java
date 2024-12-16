@@ -11,7 +11,10 @@ import javax.validation.constraints.NotEmpty;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.HashSet;
@@ -32,7 +35,8 @@ public class Role implements GrantedAuthority {
     private String nameRole;
 
     @ManyToMany(mappedBy = "roles")
-    @JsonIgnore
+    //@JsonIgnore
+    @JsonBackReference
     private Set<User> users = new HashSet<>();
 
     public Role() {
@@ -59,7 +63,7 @@ public class Role implements GrantedAuthority {
         return nameRole;
     }
 
-    public void setName(String name) {
+    public void setNameRole(String name) {
         this.nameRole = name;
     }
 
@@ -79,5 +83,6 @@ public class Role implements GrantedAuthority {
     public String toString() {
         return nameRole;
     }
+
 
 }
