@@ -33,8 +33,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
-
 
 @RestController
 @RequestMapping("/admin")
@@ -85,43 +83,43 @@ public class AdminController {
         return new ResponseEntity<>(userService.findUserById(userId), HttpStatus.OK);
     }
 
-//    @PutMapping("/users/{id}")
-//    public ResponseEntity<User> editUser(@PathVariable("id") long id, @RequestBody @Valid User user, BindingResult bindingResult) {
-//
-//        System.out.println("editUser");
-//        if (bindingResult.hasErrors()) {
-//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-//        }
-//
-//        Optional<User> existingUser = Optional.ofNullable(userService.findUserById(id));
-//        if (existingUser.isEmpty()) {
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        }
-//
-//        user.setId(id);
-//        userService.editUser(user);
-//        return new ResponseEntity<>(user, HttpStatus.OK);
-//    }
-
     @PutMapping("/users/{id}")
-    public ResponseEntity<User> editUser(@PathVariable long id, @RequestBody User userDTO) {
-        User user = userService.findUserById(id);
+    public ResponseEntity<User> editUser(@PathVariable("id") long id, @RequestBody @Valid User user, BindingResult bindingResult) {
+
+        System.out.println("editUser");
+        if (bindingResult.hasErrors()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        Optional<User> existingUser = Optional.ofNullable(userService.findUserById(id));
+        if (existingUser.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
 
         user.setId(id);
-
-        Set<Role> roles = userDTO.getRoles().stream()
-                .map(roleId -> {
-                    Role role = new Role();
-                    role.setId(roleId.getId());
-                    return role;
-                }).collect(Collectors.toSet());
-
-        user.setRoles(roles);
-
         userService.editUser(user);
-
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
+
+//    @PutMapping("/users/{id}")
+//    public ResponseEntity<User> editUser(@PathVariable long id, @RequestBody User userDTO) {
+//        User user = userService.findUserById(id);
+//
+//        user.setId(id);
+//
+//        Set<Role> roles = userDTO.getRoles().stream()
+//                .map(roleId -> {
+//                    Role role = new Role();
+//                    role.setId(roleId.getId());
+//                    return role;
+//                }).collect(Collectors.toSet());
+//
+//        user.setRoles(roles);
+//
+//        userService.editUser(user);
+//
+//        return new ResponseEntity<>(user, HttpStatus.OK);
+//    }
 
     @DeleteMapping("/users/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable("id") long id) {

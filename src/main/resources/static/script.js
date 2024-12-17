@@ -163,7 +163,7 @@ function editUser(userId) {
         age: parseInt(age),
         email: email,
         roles: [parseInt(roleId)],
-        password: password
+        password: password,
     };
 
     fetch(`/admin/users/${userId}`, {
@@ -185,13 +185,11 @@ function editUser(userId) {
 // Редактируем юзера
 function confirmEdit() {
     const userId = document.getElementById('userId').value; // Получаем значение из скрытого инпута
-    console.log(userId);
     editUser(userId);
 }
 
 // Заполняем данные в модальном окне
 function fillModalData(userId) {
-    console.log(userId)
     fetch(`/admin/users/${userId}`)
         .then(response => response.json())
         .then(user => {
