@@ -19,9 +19,11 @@
 
         <div id="navbarBrandContainer" class="navbar-brand"></div>
 
-        <form class="d-flex" th:action="@{/logout}" method="post">
-            <button type="submit" class="btn btn-outline-light">Logout</button>
-        </form>
+        <ul class="navbar-nav mr-3">
+            <li class="nav-item text-nowrap">
+                <a class="nav-link px-3" href="/logout">Logout</a>
+            </li>
+        </ul>
 
     </div>
 </nav>

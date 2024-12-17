@@ -60,13 +60,24 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     @Transactional
     public void editUser(User updateUser) {
-        User user = userRepository.findById(updateUser.getId()).orElseThrow(() -> new IllegalArgumentException("User not found"));
-        String currentPassword = user.getPassword();
+        User user = userRepository.findById(updateUser.getId())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        // Обновляем общие поля
+        user.setFirstName(updateUser.getFirstName());
+        user.setLastName(updateUser.getLastName());
+        user.setEmail(updateUser.getEmail());
+        user.setAge(updateUser.getAge());
+        user.setRoles(updateUser.getRoles());
+
+        // Проверяем, был ли передан новый пароль
         String newPassword = updateUser.getPassword();
-        if (!currentPassword.equals(newPassword)) {
-            updateUser.setPassword((passwordEncoder.encode(updateUser.getPassword())));
+        if (newPassword != null && !newPassword.isEmpty()) {
+            // Кодируем новый пароль и сохраняем его
+            user.setPassword(passwordEncoder.encode(newPassword));
         }
-        userRepository.save(updateUser);
+
+        userRepository.save(user);
     }
 
     @Override

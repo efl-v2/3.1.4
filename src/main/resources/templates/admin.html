@@ -18,12 +18,13 @@
     <div class="container-fluid">
 
         <div id="navbarBrandContainer" class="navbar-brand"></div>
-
-        <form class="d-flex" th:action="@{/logout}" method="post">
-            <button type="submit" class="btn btn-outline-light">Logout</button>
-        </form>
-
+        <ul class="navbar-nav mr-3">
+            <li class="nav-item text-nowrap">
+                <a class="nav-link px-3" href="/logout">Logout</a>
+            </li>
+        </ul>
     </div>
+
 </nav>
 
 <div class="row">
@@ -94,95 +95,41 @@
 
                         </div>
                         <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
-                            <form th:if="${user != null}"
-                                  class="card"
-                                  th:action="@{/admin/add_user}"
-                                  th:method="post"
-                                  th:object="${user}">
 
-                                <div class="card-header"><h5>Add new user</h5></div>
-
-                                <div class="card-body mx-auto" style="margin: 10px; padding: 10px">
-
-                                    <div class="form-floating mb-3">
-                                        <div class="mb-3">
-                                            <label for="InputFirstName" class="form-label tab"><b>First name</b></label>
-                                            <input type="text" class="form-control" id="InputFirstName"
-                                                   placeholder="first name"
-                                                   th:class="${#fields.hasErrors('firstName')} ? 'class=form-control is-invalid' : 'class=form-control'"
-                                                   th:field="*{firstName}">
-                                            <label for="InputFirstName" th:errors="*{firstName}"
-                                                   th:if="${#fields.hasErrors('firstName')}"></label>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-floating mb-3">
-                                        <div class="mb-3">
-                                            <label for="InputLastName" class="form-label tab"><b>Last name</b></label>
-                                            <input type="text" class="form-control" id="InputLastName"
-                                                   placeholder="last name"
-                                                   th:class="${#fields.hasErrors('lastName')} ? 'class=form-control is-invalid' : 'class=form-control'"
-                                                   th:field="*{lastName}">
-                                            <label for="InputLastName" th:errors="*{lastName}"
-                                                   th:if="${#fields.hasErrors('lastName')}"></label>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-floating mb-3">
-                                        <div class="mb-3">
-                                            <label for="InputAge" class="form-label tab"><b>Age</b></label>
-                                            <input type="number" class="form-control" id="InputAge"
-                                                   placeholder="age"
-                                                   th:class="${#fields.hasErrors('age')}? 'class= form-control is-invalid' : 'class= form-control'"
-                                                   th:field="*{age}">
-                                            <label for="InputAge" th:errors="*{age}"
-                                                   th:if="${#fields.hasErrors('age')}"></label>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-floating mb-3">
-                                        <div class="mb-3">
-                                            <label for="inputEmail" class="form-label tab"><b>Email</b></label>
-                                            <input type="email" class="form-control" id="inputEmail"
-                                                   placeholder="user@example.com"
-                                                   th:field="*{email}">
-                                        </div>
-                                    </div>
-
-                                    <div class="form-floating mb-3">
-                                        <div class="mb-3">
-                                            <label for="InputPassword" class="form-label tab"><b>Password</b></label>
-                                            <input type="password" class="form-control" id="InputPassword"
-                                                   placeholder="password"
-                                                   th:field="*{password}">
-                                        </div>
-                                    </div>
-
-                                    <div class="card mb-3">
-                                        <label class="form-label tab"><b>Roles</b></label>
-                                        <div class="card-header"></div>
-                                        <div class="card-body">
-                                            <div class="form-check">
-                                                <label class="form-check-label d-block my-2" th:each="role : ${roles}">
-                                                    <input class="form-check-input"
-                                                           th:field="*{roles}"
-                                                           th:value="${role.id}"
-                                                           type="checkbox"
-                                                           name="roles">
-                                                    <span th:text="${role.getNameRole()}"></span>
-                                                </label>
-                                            </div>
-                                            <!-- Выбор ролей -->
-                                        </div>
-                                    </div>
-
-                                    <div class="container d-flex justify-content-center align-items-center">
-                                        <button class="btn btn-success" type="submit">Add new user
-                                        </button>
-                                    </div>
+                            <form id="addUserForm">
+                                <div class="mb-3">
+                                    <label for="add-first-name" class="col-form-label"><b>First Name</b></label>
+                                    <input type="text" class="form-control" id="add-first-name" required minlength="2" maxlength="20">
                                 </div>
+                                <div class="mb-3">
+                                    <label for="add-last-name" class="col-form-label"><b>Last Name</b></label>
+                                    <input type="text" class="form-control" id="add-last-name" required minlength="2" maxlength="20">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="add-age" class="col-form-label"><b>Age</b></label>
+                                    <input type="number" class="form-control" id="add-age" required min="18" max="120">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="add-email" class="col-form-label"><b>Email</b></label>
+                                    <input type="email" class="form-control" id="add-email" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="add-roles" class="col-form-label"><b>Roles</b></label>
+                                    <select multiple class="form-select" id="add-roles" size="2" required>
+                                        <!--js-->
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="new-password" class="col-form-label"><b>Password</b></label>
+                                    <input type="text" class="form-control" id="new-password" required minlength="2" maxlength="20">
+                                </div>
+                                <input type="hidden" id="add-userId" /> <!-- Скрытое поле для хранения ID пользователя -->
                             </form>
+                            <div class="modal-footer">
+                                <button type="button" form="addUserForm" class="btn btn-primary" id="confirmAddButton" onclick="addUser()">Create new user</button>
+                            </div>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -222,7 +169,6 @@
                         </select>
                     </div>
                     <input type="hidden" id="userId" /> <!-- Скрытое поле для хранения ID пользователя -->
-                    <input type="hidden" id="password" /> <!-- Скрытое поле для password пользователя -->
                 </form>
             </div>
             <div class="modal-footer">

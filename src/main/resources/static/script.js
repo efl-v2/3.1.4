@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             renderUsersTable(users, roles); //Таблица
+            showAddForm(roles);
         })
         .catch(error => console.error('Error:', error));
 });
@@ -67,7 +68,6 @@ function renderUsersTable(users, roles) {
             rolesText = user.roles.map(role => role.authority.replace('ROLE_', '')).join(', ');
         }
         cellRole.textContent = rolesText;
-
 
         // Кнопки редактирования и удаления
         const editButton = document.createElement('button');
@@ -117,13 +117,11 @@ function showEditModal(userId, roles) {
             const ageInput = document.getElementById('edit-age');
             const emailInput = document.getElementById('edit-email');
             const roleSelect = document.getElementById('edit-roles');
-            const passwordInput = document.getElementById('password');
 
             firstNameInput.value = user.firstName; // Заполняем поля формы
             lastNameInput.value = user.lastName;
             ageInput.value = user.age;
             emailInput.value = user.email;
-            passwordInput.value = user.password;
 
             // Очищаем текущий список ролей
             roleSelect.innerHTML = '';
@@ -132,11 +130,6 @@ function showEditModal(userId, roles) {
                 let option = document.createElement('option');
                 option.textContent = role.authority.replace('ROLE_', '')
                 option.value = role.id;
-
-                // // Если роль совпадает с текущей ролью пользователя, устанавливаем её как выбранную
-                // if (role.id === user.roles[0].id) {
-                //     option.selected = true;
-                // }
 
                 roleSelect.appendChild(option);
             });
@@ -153,17 +146,22 @@ function editUser(userId) {
     const lastName = document.getElementById('edit-last-name').value;
     const age = document.getElementById('edit-age').value;
     const email = document.getElementById('edit-email').value;
-    const roleId = document.getElementById('edit-roles').value;
-    const password = document.getElementById('password').value;
 
-    console.log(password)
+
+    // Получение всех выбранных ролей
+    const roleSelect = document.getElementById('edit-roles');
+    const selectedRoles = Array.from(roleSelect.selectedOptions).map(option => ({
+        id: parseInt(option.value), // Получаем id роли
+        nameRole: `ROLE_${option.textContent.toUpperCase()}`, // Получаем название роли
+        authority: `ROLE_${option.textContent.toUpperCase()}`
+    }));
+
     const userData = {
         firstName: firstName,
         lastName: lastName,
         age: parseInt(age),
         email: email,
-        roles: [parseInt(roleId)],
-        password: password,
+        roles: selectedRoles, // Массив объектов Role
     };
 
     fetch(`/admin/users/${userId}`, {
@@ -175,9 +173,9 @@ function editUser(userId) {
     })
         .then(response => response.json())
         .then(data => {
-            // const modal = new bootstrap.Modal(document.getElementById('editModal'));
-            // modal.hide();
-            // window.location.reload(); // Перезагрузка страницы
+            const modal = new bootstrap.Modal(document.getElementById('editModal'));
+            modal.hide();
+            window.location.reload(); // Перезагрузка страницы
         })
         .catch(error => console.error('Error:', error));
 }
@@ -233,48 +231,77 @@ function confirmDelete() {
     deleteUser(userId);
 }
 
-//
-//
-//
-//todo
-function openCreateUserModal() {
-    const modal = document.getElementById('createUserModal');
-    modal.style.display = 'block';
+function showAddForm(roles) {
+    console.log("Функция showAddForm вызвана");
+
+    // Очистка полей формы перед открытием
+    const firstNameInput = document.getElementById('add-first-name');
+    const lastNameInput = document.getElementById('add-last-name');
+    const ageInput = document.getElementById('add-age');
+    const emailInput = document.getElementById('add-email');
+    const passwordInput = document.getElementById('new-password');
+    const roleSelect = document.getElementById('add-roles');
+
+    firstNameInput.value = ''; // Очищаем поля формы
+    lastNameInput.value = '';
+    ageInput.value = '';
+    emailInput.value = '';
+    passwordInput.value = '';
+
+    // Очищаем текущий список ролей
+    roleSelect.innerHTML = '';
+
+    // Создаем опции для каждого элемента массива roles
+    roles.forEach(role => {
+        let option = document.createElement('option');
+        option.textContent = role.authority.replace('ROLE_', '');
+        option.value = role.id;
+        roleSelect.appendChild(option);
+    });
 }
 
-function closeCreateUserModal() {
-    const modal = document.getElementById('createUserModal');
-    modal.style.display = 'none';
-}
+function addUser() {
+    const firstName = document.getElementById('add-first-name').value;
+    const lastName = document.getElementById('add-last-name').value;
+    const age = document.getElementById('add-age').value;
+    const email = document.getElementById('add-email').value;
+    const password = document.getElementById("new-password").value;
 
-function createNewUser() {
-    const firstName = document.getElementById('newFirstNameInput').value;
-    const lastName = document.getElementById('newLastNameInput').value;
-    const age = document.getElementById('newAgeInput').value;
-    const email = document.getElementById('newEmailInput').value;
-    const roleId = document.getElementById('newRoleSelect').value;
+    // Получение всех выбранных ролей
+    const roleSelect = document.getElementById('add-roles');
+    const selectedRoles = Array.from(roleSelect.selectedOptions).map(option => ({
+        id: parseInt(option.value), // Получаем id роли
+        nameRole: `ROLE_${option.textContent.toUpperCase()}`, // Получаем название роли
+        //authority: `ROLE_${option.textContent.toUpperCase()}`
+    }));
 
     const userData = {
         firstName: firstName,
         lastName: lastName,
         age: parseInt(age),
         email: email,
-        roles: [{ id: parseInt(roleId) }]
+        roles: selectedRoles, // Массив объектов Role
+        password: password
     };
 
-    fetch('/users', {
+    fetch('/admin/users', { // Отправляем запрос на создание нового пользователя
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(userData)
     })
-        .then(response => response.json())
-        .then(data => {
-            alert('Новый пользователь создан!');
-            closeCreateUserModal(); // Скрываем модальное окно
-
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Network response was not ok: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(() => {
             window.location.reload(); // Перезагрузка страницы
         })
-        .catch(error => console.error('Error:', error));
+        .catch(error => {
+            alert(`Произошла ошибка при добавлении пользователя: ${error.message}`);
+            console.error('Error:', error);
+        });
 }

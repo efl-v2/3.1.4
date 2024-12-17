@@ -13,6 +13,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
@@ -41,34 +42,24 @@ public class User implements UserDetails {
     private long id;
 
     @Column(name = "first_name")
-    @Size(min = 2, max = 40, message = "Invalid name")
-    @Pattern(regexp = "^[A-Za-zА-Яа-яЁё]{2,40}$", message = "use correct value")
     private String firstName;
 
     @Column(name = "last_name")
-    @Size(min = 2, max = 40, message = "Invalid name")
-    @Pattern(regexp = "^[A-Za-zА-Яа-яЁё]{2,40}$", message = "use correct value")
     private String lastName;
 
     @Column(name = "age")
-    @Min(value = 18, message = "Age should be at least 18")
-    @Max(value = 120, message = "Age should be less than 120")
     private int age;
 
     @Column(name = "email")
-    @Size(min = 6, max = 60, message = "Invalid email")
     private String email;
 
     @Column(name = "password", nullable = false)
-    @Size(min = 6, message = "Min 6 symbol")
     private String password;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @Fetch(FetchMode.JOIN)
     @JoinTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
-    @JsonManagedReference
     private Set<Role> roles = new HashSet<>();
 
     public User() {

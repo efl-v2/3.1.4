@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
-    fetch('/user') // URL
+    fetch("/user/profile_user") // URL
         .then(response => response.json())
         .then(data => {
 

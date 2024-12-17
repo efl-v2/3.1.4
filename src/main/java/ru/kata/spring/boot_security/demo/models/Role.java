@@ -9,15 +9,10 @@ import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import org.springframework.security.core.GrantedAuthority;
 
-import java.util.HashSet;
+
 import java.util.Objects;
 import java.util.Set;
 
@@ -35,9 +30,8 @@ public class Role implements GrantedAuthority {
     private String nameRole;
 
     @ManyToMany(mappedBy = "roles")
-    //@JsonIgnore
-    @JsonBackReference
-    private Set<User> users = new HashSet<>();
+    @JsonIgnore
+    private Set<User> users;
 
     public Role() {
     }
